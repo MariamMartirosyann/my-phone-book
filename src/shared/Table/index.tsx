@@ -104,7 +104,7 @@ const BasicTable = <T extends unknown>({
   return (
     <>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{ minWidth:250 }} aria-label="simple table">
           <TableHead>
             <TableRow>{generateColumns}</TableRow>
           </TableHead>

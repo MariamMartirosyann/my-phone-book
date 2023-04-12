@@ -30,6 +30,15 @@ export const columns = [
   },
 ];
 
+export const columnsSmall = [
+  {
+    label: "Name",
+    field: "name",
+  },
+ 
+];
+
+
 export const removeContactWarningConfig = {
   title: "Warning",
   description: "Are you sure you want to delete this contact???",

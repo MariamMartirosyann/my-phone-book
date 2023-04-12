@@ -1,28 +1,23 @@
 import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useMediaQuery } from "react-responsive";
 import { makeStyles } from "@mui/styles";
-import Box from "@mui/material/Box";
 import AddIcon from "@mui/icons-material/Add";
-import {
-  Button,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Paper, TextField, Typography, Box } from "@mui/material";
 import BasicModal from "../../shared/Modal/BasicModal";
 import { IContact, IEmail, INumber } from "../../app/intrefaces";
 import AddEditContact from "../contact/AddEditContact";
 import BasicTable from "../../shared/Table";
 import {
   columns,
+  columnsSmall,
   removeContactWarningConfig,
 } from "../../shared/Table/columns";
-import { useDispatch, useSelector } from "react-redux";
 import { deleteContact, selectContact } from "../../app/store/ContactSlice";
 import ContactDetail from "../contact/ContactDetail";
 import SharedDialog from "../../shared/Dialog";
-import toast from "react-hot-toast";
-import { FormProvider, useForm } from "react-hook-form";
 
 const useStyles: any = makeStyles({
   main: {
@@ -34,10 +29,10 @@ const useStyles: any = makeStyles({
     alignItems: "center",
   },
   table: {
-    width: "55%",
     height: "80%",
     background: "white",
     padding: "10px",
+    overflowY: "scroll",
   },
   btn: {
     marginRight: "20px",
@@ -67,6 +62,11 @@ const Home = () => {
   const [activeContact, setActiveContact] = useState<IContact>();
   const [isWarningOpen, setWarningOpen] = useState(false);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
+
+  const isBigScreen = useMediaQuery({ query: "(min-width: 1400px)" });
+  const isMediumScreen = useMediaQuery({ query: "(min-width: 670px)" });
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 370px)" });
+
   const handleOpenModal = () => setOpenModal(true);
 
   const handleClose = () => {
@@ -150,58 +150,60 @@ const Home = () => {
 
   return (
     <Box className={classes.main}>
-      <Box component={Paper} className={classes.table} elevation={10}>
+      <Box
+        component={Paper}
+        className={classes.table}
+        elevation={10}
+        width={isBigScreen ? "55%" : "80%"}
+      >
         <Box className={classes.center}>
           {" "}
           <Typography variant="h4" color="primary">
-            Mariam Phone Book App
+            Phone Book
           </Typography>
         </Box>
-        <Box mt={2} ml={10}>
+        <Box sx={{ margin: "20px" }}>
           <FormProvider {...methods}>
-            <Box mt={2} mb={2} ml={2}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={3}>
-                    <TextField
-                      name="Search"
-                      size="small"
-                      className="searchBar"
-                      label="Search"
-                      onChange={(e) => setValue(e.target.value)}
-                    ></TextField>
-                  </Grid>
+            <TextField
+              name="Search"
+              size="small"
+              className="searchBar"
+              label="Search"
+              onChange={(e) => setValue(e.target.value)}
+              sx={{ width: !isMediumScreen ? "90%" : null }}
+            />
 
-                  <Grid item xs={3}>
-                    <Button
-                      variant="outlined"
-                      size="medium"
-                      onClick={handleClear}
-                      color="primary"
-                    >
-                      Clear
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
+            <Button
+              variant="outlined"
+              size="medium"
+              onClick={handleClear}
+              color="primary"
+              sx={{
+                margin: isMediumScreen ? " 2px 0 0 20px" : "10px 0",
+                width: !isMediumScreen ? "90%" : null,
+              }}
+            >
+              Clear
+            </Button>
           </FormProvider>
-
+        
         </Box>
-        <Box className={classes.end}>
+
+        <Box sx={{ margin:"20px", textAlign:!isMediumScreen? null: "end", }}>
           <Button
             onClick={handleOpenModal}
             variant="outlined"
             endIcon={<AddIcon />}
             size="small"
+            sx={{
+              margin: isMediumScreen ? " 2px 0 0 20px" : "10px 0",
+              width: !isMediumScreen ? "90%" : null,
+            
+            }}
           >
             Add Contact
           </Button>
-        </Box>
+          </Box>
         <BasicModal
           open={openModal}
           setOpen={setOpenModal}
@@ -211,12 +213,12 @@ const Home = () => {
           <AddEditContact onSuccess={onFormSuccess} editData={activeContact} />
         </BasicModal>
 
-        <Box sx={{ width: "80%", justifyContent: "center", margin: "auto" }}>
+        <Box sx={{ margin:!isSmallScreen ? "20px" : null }}>
           {" "}
           {!!value ? (
             <BasicTable<IContact>
               data={filterData}
-              columns={columns}
+              columns={isMediumScreen ? columns : columnsSmall}
               getActions={getActions}
               filterOptions={{
                 reset: methods.reset,
@@ -226,7 +228,7 @@ const Home = () => {
           ) : (
             <BasicTable<IContact>
               data={contactData}
-              columns={columns}
+              columns={isMediumScreen ? columns : columnsSmall}
               getActions={getActions}
               filterOptions={{
                 reset: methods.reset,
