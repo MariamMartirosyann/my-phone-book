@@ -154,7 +154,7 @@ const Home = () => {
         <Box className={classes.center}>
           {" "}
           <Typography variant="h4" color="primary">
-            Phone Book App
+            Mariam Phone Book App
           </Typography>
         </Box>
         <Box mt={2} ml={10}>
