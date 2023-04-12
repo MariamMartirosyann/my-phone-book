@@ -204,6 +204,8 @@ const Home = () => {
             Add Contact
           </Button>
           </Box>
+
+          
         <BasicModal
           open={openModal}
           setOpen={setOpenModal}
