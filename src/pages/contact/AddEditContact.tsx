@@ -27,6 +27,8 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { app } from "../../firebase";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useMediaQuery } from "react-responsive";
 
 const useStyles: any = makeStyles({
   imgWrapper: {
@@ -63,6 +65,7 @@ const AddEditContact = ({ onSuccess, editData }: IAddEditContactProps) => {
   const classes = useStyles();
   const fileInputRef = useRef<any>(null);
 
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [firebaseUrl, setFirebaseUrl] = useState<string>();
   const [editDataState, setEditDataState] = useState<
     IContact | null | undefined
@@ -155,10 +158,12 @@ const AddEditContact = ({ onSuccess, editData }: IAddEditContactProps) => {
   };
 
   const downloadFromFirebase = async (name: string) => {
+    setLoading(true)
     const storage = getStorage(app);
     const storageRef = ref(storage, name);
     const url = await getDownloadURL(storageRef);
     setFirebaseUrl(url);
+    setLoading(false)
   };
 
   const onSubmit = async (formData: IFormData) => {
@@ -235,80 +240,115 @@ const AddEditContact = ({ onSuccess, editData }: IAddEditContactProps) => {
             {numberFieldValue.fields?.map((i, index) => {
               //console.log(errors?.number?.[index]?.value?.message,"errors");
               return (
-                <Grid
-                  item
-                  key={index}
-                  xs={12}
-                  style={{ display: "flex", flexDirection: "row" }}
-                >
-                  <InputField
-                    name={`number.${index}.value`}
-                    label="Number"
-                    customError={errors?.number?.[index]?.value?.message}
-                    rules={{
-                      ...requiredRules,
-                      pattern: {
-                        value: phoneNumberRegex,
-                        message: "Enter only + or numbers, minimum 9 symbols",
-                      },
-                    }}
-                  />
-                  <Button
-                   variant="outlined"
-                    size="small"
-                    onClick={handleAddNumber}
-                    style={{ marginLeft: "5px" }}
-                  >
-                    <PlusIcon />
-                  </Button>
-
-                  {showRemoveNumber ? (
-                    <Button
-                    variant="outlined"
-                      size="small"
-                      style={{ marginLeft: "5px" }}
-                      onClick={handleRemoveNumber}
+                <Grid item key={index} xs={12}>
+                  <Grid container spacing={2}>
+                    <Grid
+                      item
+                      lg={showRemoveNumber ? 9.5 : 10.5}
+                      md={8}
+                      xs={12}
                     >
-                      <DeleteIcon />
-                    </Button>
-                  ) : null}
+                      <InputField
+                        name={`number.${index}.value`}
+                        label="Number"
+                        customError={errors?.number?.[index]?.value?.message}
+                        rules={{
+                          ...requiredRules,
+                          pattern: {
+                            value: phoneNumberRegex,
+                            message:
+                              "Enter only + or numbers, minimum 9 symbols",
+                          },
+                        }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      lg={showRemoveNumber ? 2.5 : 1.5}
+                      md={4}
+                      xs={12}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "end",
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        onClick={handleAddNumber}
+                        sx={{
+                          marginLeft: "5px",
+                          width: showRemoveNumber ? "50%" : "100%",
+                        }}
+                      >
+                        {/* <PlusIcon /> */}
+                        Add
+                      </Button>
+
+                      {showRemoveNumber ? (
+                        <Button
+                          variant="outlined"
+                          size="medium"
+                          style={{ marginLeft: "5px", width: "50%" }}
+                          onClick={handleRemoveNumber}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      ) : null}
+                    </Grid>
+                  </Grid>
                 </Grid>
               );
             })}
 
             {emailFieldValue.fields?.map((i, index) => {
               return (
-                <Grid
-                  key={index}
-                  item
-                  xs={12}
-                  style={{ display: "flex", flexDirection: "row" }}
-                >
-                  <InputField
-                    key={index}
-                    name={`email.${index}.value`}
-                    label="Email"
-                    customError={errors?.email?.[index]?.value?.message}
-                    rules={{ ...requiredRules, ...emailRule }}
-                  />
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={handleAddEmail}
-                    style={{ marginLeft: "5px" }}
-                  >
-                    <PlusIcon />
-                  </Button>
-                  {showRemoveEmail ? (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      style={{ marginLeft: "5px" }}
-                      onClick={handleRemoveEmail}
+                <Grid key={index} item xs={12}>
+                  <Grid container spacing={2}>
+                    <Grid item lg={showRemoveEmail ? 9.5 : 10.5} md={8} xs={12}>
+                      <InputField
+                        key={index}
+                        name={`email.${index}.value`}
+                        label="Email"
+                        customError={errors?.email?.[index]?.value?.message}
+                        rules={{ ...requiredRules, ...emailRule }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      lg={showRemoveEmail ? 2.5 : 1.5}
+                      md={4}
+                      xs={12}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "end",
+                      }}
                     >
-                      <DeleteIcon />
-                    </Button>
-                  ) : null}
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        onClick={handleAddEmail}
+                        sx={{
+                          marginLeft: "5px",
+                          width: showRemoveEmail ? "50%" : "100%",
+                        }}
+                      >
+                        {/* <PlusIcon /> */} Add
+                      </Button>
+                      {showRemoveEmail ? (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          sx={{ marginLeft: "5px", width: "50%" }}
+                          onClick={handleRemoveEmail}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      ) : null}
+                    </Grid>
+                  </Grid>
                 </Grid>
               );
             })}
@@ -334,7 +374,7 @@ const AddEditContact = ({ onSuccess, editData }: IAddEditContactProps) => {
               <Button
                 variant="outlined"
                 size="large"
-                style={{ width: "200px", marginBottom: "15px" }}
+                sx={{ width: "100%", marginBottom: "15px" }}
                 onClick={triggerFileUpload}
               >
                 Add Photo
@@ -350,8 +390,22 @@ const AddEditContact = ({ onSuccess, editData }: IAddEditContactProps) => {
             )}
           </Grid>
           {photoUrlWatch ? (
-            <Grid item xs={12} className={classes.imgWrapper}>
-              <img src={previewSrc} alt="contact" />
+            <Grid
+              item
+              xs={12}
+              sx={{
+                width: 200,
+                margin:"5px auto",
+                // height: 200,
+                "& img": {
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                  
+                },
+              }}
+            >
+              {isLoading? <CircularProgress/>:<img src={previewSrc} alt="contact" /> }
             </Grid>
           ) : null}
 
